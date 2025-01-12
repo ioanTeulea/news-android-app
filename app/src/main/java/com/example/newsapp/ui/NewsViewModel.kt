@@ -78,8 +78,15 @@ class NewsViewModel(app:Application,val newsRepository: NewsRepository):AndroidV
         }
         return Resource.Error(response.message())
     }
-    fun addToFavourites(article: Article)=viewModelScope.launch {
-        newsRepository.upsert(article)
+    fun addToFavourites(article: Article) = viewModelScope.launch {
+        val url = article.url
+        if (!url.isNullOrEmpty()) {
+            val existingArticle = newsRepository.getArticleByUrl(url)
+
+            if (existingArticle == null) {
+                newsRepository.upsert(article)
+            }
+        }
     }
     fun getFavouritesNews()=newsRepository.getAllArticles()
     fun deleteArticle(article: Article)=viewModelScope.launch {

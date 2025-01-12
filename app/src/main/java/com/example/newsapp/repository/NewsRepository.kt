@@ -9,5 +9,6 @@ class NewsRepository(val db:ArticleDatabase) {
     suspend fun searchNews(searchQuery:String,pageNumber:Int)=RetrofitInstance.api.searchForNews(searchQuery,pageNumber)
     suspend fun upsert(article: Article)=db.getArticleDao().upsert(article);
      fun getAllArticles()=db.getArticleDao().getAllArticles();
+    suspend fun getArticleByUrl(url: String): Article? = db.getArticleDao().getArticleByUrl(url)
     suspend fun deleteArticle(article: Article)=db.getArticleDao().deleteArticle(article)
 }
