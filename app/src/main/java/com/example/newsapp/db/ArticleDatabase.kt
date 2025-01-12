@@ -9,7 +9,8 @@ import com.example.newsapp.models.Article
 
 @Database(
     entities=[Article::class],
-    version=1
+    version=3
+
 )
 @TypeConverters(Converters::class)
 abstract class ArticleDatabase :RoomDatabase(){
@@ -32,7 +33,9 @@ abstract class ArticleDatabase :RoomDatabase(){
                 context.applicationContext,
                 ArticleDatabase::class.java,
                 "article_db.db"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
 
     }
 

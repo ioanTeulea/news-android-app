@@ -1,26 +1,55 @@
 package com.example.newsapp.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.navArgs
 import com.example.newsapp.R
+import com.example.newsapp.databinding.ActivityNewsBinding
+import com.example.newsapp.databinding.FragmentArticleBinding
+import com.example.newsapp.ui.NewsActivity
+import com.example.newsapp.ui.NewsViewModel
+import com.google.android.material.snackbar.Snackbar
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
+class ArticleFragment : Fragment(R.layout.fragment_article) {
 
-class ArticleFragment : Fragment() {
+    lateinit var newsViewModel: NewsViewModel
+    val args:ArticleFragmentArgs by navArgs()
+    lateinit var binding: FragmentArticleBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_article, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding=FragmentArticleBinding.bind(view)
+
+        newsViewModel=(activity as NewsActivity).newsViewModel
+        val article=args.article
+
+        try {
+            binding.webView.apply {
+                webViewClient = WebViewClient()
+                article.url?.let {
+                    Log.d("ArticleFragment", "Article URL: ${article.url}")
+
+                    loadUrl(it)
+                } ?: run {
+                    Toast.makeText(context, "Invalid article URL", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ArticleFragment", "Error loading URL: ${e.message}", e)
+        }
+
+        binding.fab.setOnClickListener{
+            newsViewModel.addToFavourites(article)
+            Snackbar.make(view,"Added to favourites",Snackbar.LENGTH_SHORT).show()
+        }
     }
 
 }
